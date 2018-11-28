@@ -1,0 +1,43 @@
+version : '3'
+services:
+    web_app:
+        container_name: ebo7_app
+        image: web_app
+        build: .
+        ports:
+            - 3000:80
+        restart: always
+        links:
+          - mongo
+        volumes:
+          - ./logs/access.log:/var/access_logs/access.log
+          - ./logs/error.log:/var/log/nginx/error.log
+        
+    logs_to_mongodb:
+        container_name: logs_to_mongodb
+        image: logs_to_mongodb
+        build: ./logs_to_mongoDB
+        ports:
+          - "80:80"
+        volumes:
+          - ./logs/access.log:/var/access_logs/access.log      
+    
+    attempts_counter:
+        container_name: attempts_counter
+        image: attempts_counter
+        build: ./attempts_counter
+        ports:
+          - "70:80"
+        volumes:
+          - ./logs/error.log:/var/error_log/error.log    
+          
+    mongo:
+        container_name: mongo
+        image: mongo
+        volumes:
+          - ./data:/data/db
+        ports:
+          - "27017:27017"
+        
+
+ 
